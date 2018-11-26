@@ -1,6 +1,6 @@
 FROM maven:3.3.3-jdk-8 as builder
 LABEL image=skywalking-build
-ARG RELEASE_VERSION=v5.0.0-GA
+ARG RELEASE_VERSION=v6.0.0-alpha
 ENV TAG_NAME=$RELEASE_VERSION
 ENV SKYWALKING_BUILD_HOME=/usr/local/skywalking
 RUN git clone https://github.com/apache/incubator-skywalking.git $SKYWALKING_BUILD_HOME
@@ -26,7 +26,7 @@ RUN set -ex; \
     rm -rf "$DIST_NAME.tar.gz"; rm -rf "$DIST_NAME/config/log4j2.xml"; \
     rm -rf "$DIST_NAME/bin"; rm -rf "$DIST_NAME/webapp"; rm -rf "$DIST_NAME/agent";
 ENV APP_HOME $SKYWALKING_HOME/apache-skywalking-apm-incubating/
-CMD /usr/bin/java $JAVA_OPTS -cp "$APP_HOME/collector-libs/*:$APP_HOME/config" org.apache.skywalking.apm.collector.boot.CollectorBootStartUp
+CMD /usr/bin/java $JAVA_OPTS -cp "$APP_HOME/oap-server/*:$APP_HOME/config" org.apache.skywalking.apm.collector.boot.CollectorBootStartUp
 
 
 
@@ -42,7 +42,7 @@ WORKDIR $SKYWALKING_HOME/
 RUN set -ex; \
     tar -xzf "$DIST_NAME.tar.gz"; \
     rm -rf "$DIST_NAME.tar.gz"; rm -rf "$DIST_NAME/config"; \
-    rm -rf "$DIST_NAME/bin"; rm -rf "$DIST_NAME/collector-libs"; rm -rf "$DIST_NAME/agent";
+    rm -rf "$DIST_NAME/bin"; rm -rf "$DIST_NAME/oap-server"; rm -rf "$DIST_NAME/agent";
 ENV APP_HOME $SKYWALKING_HOME/apache-skywalking-apm-incubating/
 CMD /usr/bin/java $JAVA_OPTS -jar $APP_HOME/webapp/skywalking-webapp.jar --spring.config.location=$APP_HOME/webapp/config/webapp.yml
 
