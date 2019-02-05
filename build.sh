@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VERSION=v6.0.0-alpha
+VERSION=v6.0.0-beta
 
 docker build --build-arg RELEASE_VERSION=$VERSION .
 
