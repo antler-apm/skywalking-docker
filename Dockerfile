@@ -25,8 +25,14 @@ RUN set -ex; \
     tar -xzf "$DIST_NAME.tar.gz"; \
     rm -rf "$DIST_NAME.tar.gz"; rm -rf "$DIST_NAME/config/log4j2.xml"; \
     rm -rf "$DIST_NAME/bin"; rm -rf "$DIST_NAME/webapp"; rm -rf "$DIST_NAME/agent";
-ENV APP_HOME $SKYWALKING_HOME/apache-skywalking-apm-incubating/
-CMD /usr/bin/java $JAVA_OPTS -cp "$APP_HOME/oap-server/*:$APP_HOME/config" org.apache.skywalking.apm.collector.boot.CollectorBootStartUp
+RUN GRPC_HEALTH_PROBE_VERSION=v0.2.1 && \
+    wget -qO$SKYWALKING_HOME/grpc_health_probe https://github.com/grpc-ecosystem/grpc-health-probe/releases/download/${GRPC_HEALTH_PROBE_VERSION}/grpc_health_probe-linux-amd64 && \
+    chmod +x $SKYWALKING_HOME/grpc_health_probe
+ENV APP_HOME $SKYWALKING_HOME/apache-skywalking-apm-incubating
+WORKDIR $APP_HOME
+COPY files/log4j2.xml $APP_HOME/config/
+COPY files/docker-entrypoint.sh $APP_HOME/
+ENTRYPOINT ["sh", "docker-entrypoint.sh"]
 
 
 
@@ -43,8 +49,12 @@ RUN set -ex; \
     tar -xzf "$DIST_NAME.tar.gz"; \
     rm -rf "$DIST_NAME.tar.gz"; rm -rf "$DIST_NAME/config"; \
     rm -rf "$DIST_NAME/bin"; rm -rf "$DIST_NAME/oap-server"; rm -rf "$DIST_NAME/agent";
-ENV APP_HOME $SKYWALKING_HOME/apache-skywalking-apm-incubating/
-CMD /usr/bin/java $JAVA_OPTS -jar $APP_HOME/webapp/skywalking-webapp.jar --spring.config.location=$APP_HOME/webapp/config/webapp.yml
+ENV APP_HOME $SKYWALKING_HOME/apache-skywalking-apm-incubating
+WORKDIR $APP_HOME
+COPY ui_files/docker-entrypoint.sh .
+COPY ui_files/logback.xml webapp/
+ENTRYPOINT ["sh", "docker-entrypoint.sh"]
+
 
 
 
